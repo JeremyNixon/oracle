@@ -1,46 +1,57 @@
 import math
 import numpy as np
-import operator 
 
-def eucledian_distance(instance1, instance2, length):
+def minkowski_distance(sample1, sample2, dimensions, q = 2):
+    """
+    We will default to Eucledian Distance (q = 2), change q in order to 
+    adapt to a different distance metric.
+    """
+    
     distance = 0
-    for x in range(length):
-        distance += (instance1[x] - instance2[x])**2
-        eucledian_distance = math.sqrt(distance)
-    return eucledian_distance
+    # Iterate over each dimension and add the difference to the sum.
+    for dimension in range(dimensions):
+        distance += abs(sample1[dimension] - sample2[dimension])**q
+    
+    minkowski_distance = distance**(1.0/q)
+    
+    return minkowski_distance
 
-def get_neighbors(trainingSet, testInstance, k):
+def neighbors(x_train, test_datapoint, k, q=2):
+    # Calculate the distance from our test datapoint to every training datapoint.
     distances = []
-    length = len(testInstance)-1
-    for x in range(len(trainingSet)):
-        dist = eucledian_distance(testInstance, trainingSet[x], length)
-        distances.append((trainingSet[x], dist, x))
-    distances.sort(key=operator.itemgetter(1))
+    for datapoint in range(len(x_train)):
+        distance = minkowski_distance(x_train[datapoint], test_datapoint, len(test_datapoint)-1, q)
+        distances.append((x_train[datapoint], distance, datapoint))
+    
+    # Sort training datapoints based on distance
+    distances.sort(key=lambda x: x[1])
+    
     neighbors = []
-    for x in range(k):
-        neighbors.append(distances[x][2])
+    for neighbor in range(k):
+        neighbors.append(distances[neighbor][2])
+        
     return neighbors
 
-# Change the get_response function to allow KNN regression
-def get_response(neighbors, y_train):
-    class_votes = {}
-    for x in range(len(neighbors)):
-        response = y_train[neighbors[x]].item(0)
-        if response in class_votes:
-            class_votes[response] += 1
+def outcome(neighbors, y_train):
+    # Check the classes of the nearest neighbors, and choose the class that is most prevalent
+    neighbor_classes = {}
+    for neighbor in range(len(neighbors)):
+        response = y_train[neighbors[neighbor]].item(0)
+        if response in neighbor_classes:
+            neighbor_classes[response] += 1
         else:
-            class_votes[response] = 1
-    sorted_votes = sorted(class_votes.iteritems(), key=operator.itemgetter(1), reverse=True)
-    return sorted_votes[0][0]
-    
-def KNN_Classifier(x_train, y_train, x_test, k):
+            neighbor_classes[response] = 1
+    votes = sorted(neighbor_classes.iteritems(), key = lambda x: x[1])
+    return votes[0][0]
+
+def KNN_Classifier(x_train, y_train, x_test, k, q = 2):	
 
     x_train = np.array(x_train)
     y_train = np.array(y_train)
     x_test = np.array(x_test)
     predictions = []
     for i in range(len(x_test)):
-        neighbors = get_neighbors(x_train, x_test[i], k)
-        response = get_response(neighbors, y_train)
-        predictions.append(response)
+        nearest_neighbors = neighbors(x_train, x_test[i], k, q)
+        result = outcome(nearest_neighbors, y_train)
+        predictions.append(result)
     return predictions
