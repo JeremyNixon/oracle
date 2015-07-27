@@ -9,8 +9,8 @@ This is a Python Machine Learning library developed by Jeremy Nixon with impleme
 
 
 Tutorials for KNN and Regularized Linear Regression can be found at Hyperanalytic:<br><br>
-<a href='http://www.hyperanalytic.net/KNN'>K-Nearest Neighbors</a><br>
-<a href='http://www.hyperanalytic.net/ridge-regression'>Ridge Regression</a><br>
+<a href='http://hyperanalytic.net/KNN'>K-Nearest Neighbors</a><br>
+<a href='http://hyperanalytic.net/ridge-regression'>Ridge Regression</a><br>
 
 <br>These algorithms are written for educational purposes - optimized industry grade versions of these algorithms can be found in Scikit-Learn, Theano, PyLearn2, Statsmodels, PyMC, Shogon, Gensim, etc.
 
