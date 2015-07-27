@@ -1,8 +1,20 @@
 Welcome to Oracle!
 
-This is a Machine Learning library developed by Jeremy Nixon with implementations of:
-<br>
+This is a Python Machine Learning library developed by Jeremy Nixon with implementations of:
+<br><br>
 *Regularized Linear Regression (Ridge Regression)<br>
 *Standard Linear Regression<br>
 *K-Nearest Neighbors<br>
 *K-Means Clustering (Lloyd's Algorithm)<br>
+
+
+Tutorials for KNN and Regularized Linear Regression can be found at Hyperanalytic:<br><br>
+<a href='hyperanalytic.net/KNN'>K-Nearest Neighbors</a><br>
+<a href='hyperanalytic.net/ridge-regression'>Ridge Regression</a><br>
+
+<br>These algorithms are written for educational purposes - optimized industry grade versions of these algorithms can be found in Scikit-Learn, Theano, PyLearn2, Statsmodels, PyMC, Shogon, Gensim, etc.
+
+
+
+
+
