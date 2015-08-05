@@ -1,5 +1,13 @@
 import numpy as np
 
+def L2_norm(vector):
+    count = 0
+    for i in vector:
+        i = i**2
+        count += i
+    norm = np.sqrt(count)
+    return norm
+
 def cluster(x_train, means):
     clusters = {}
     # Assign each datapiont to a cluster based on L2 distance to cluster center
