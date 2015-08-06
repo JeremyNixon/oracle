@@ -48,10 +48,7 @@ def k_means_plus_plus_initialize(x_train, k):
 
         new_mean = np.array(x_train[choice])
         means.append(list(new_mean))
-        
-#     l = []
-#     for i in means:
-#         print i
+
     return means
 
 
