@@ -44,4 +44,19 @@ def k_means(x_train, K):
         
         # Re-evaluate cluster centers
         means = reevaluate_cluster_centers(oldmeans, clusters)
-    return(means, clusters)
+        
+    cluster_list = []
+    for i, j in clusters.iteritems():
+        for k in j:
+            cluster_list.append([i, k])
+
+    final_array = []
+    dummy_array = [0]*len(cluster_list)
+    for i in range(len(cluster_list)):
+        for j in range(len(x_train)):
+            if (x_train[j] == cluster_list[i][1]).all():
+                if dummy_array[i] != 1:
+                    final_array.append([cluster_list[i][0], j, cluster_list[i][1]])
+                dummy_array[i] = 1
+                
+    return(means, final_array)
