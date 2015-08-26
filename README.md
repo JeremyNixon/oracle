@@ -1,14 +1,14 @@
-####Welcome to Oracle!
+###Welcome to Oracle!
 
 ***
 
-#This is a Python Machine Learning library developed by Jeremy Nixon with implementations of:
+######This is a Python Machine Learning library developed by Jeremy Nixon with implementations of:
 <br><br>
 *Regularized Linear Regression (Ridge Regression)*<br>
 *Standard Linear Regression*<br>
 *K-Nearest Neighbors*<br>
 *K-Means Clustering (Lloyd's Algorithm)*<br>
-*K-Mean++* <br>
+*K-Means++* <br>
 *Logistic Regression*<br>
 
 ***
