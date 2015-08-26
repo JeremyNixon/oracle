@@ -6,6 +6,8 @@ This is a Python Machine Learning library developed by Jeremy Nixon with impleme
 *Standard Linear Regression<br>
 *K-Nearest Neighbors<br>
 *K-Means Clustering (Lloyd's Algorithm)<br>
+*K-Means ++ <br>
+*Logistic Regression<br>
 
 
 Tutorials for KNN, k-means, k-means++, linear regression and ridge regression can be found at Hyperanalytic:<br><br>
