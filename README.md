@@ -14,11 +14,11 @@
 ***
 
 Tutorials for KNN, k-means, k-means++, linear regression and ridge regression can be found at Hyperanalytic:<br><br>
-*<a href='http://hyperanalytic.net/KNN'>K-Nearest Neighbors</a><br>
-*<a href='http://hyperanalytic.net/k-means'>K-Means</a><br>
-*<a href='http://hyperanalytic.net/k-means++'>K-Means++</a><br>
-*<a href='http://hyperanalytic.net/linear-regression'>Linear Regression</a><br>
-*<a href='http://hyperanalytic.net/ridge-regression'>Ridge Regression</a><br>
+* <a href='http://hyperanalytic.net/KNN'>K-Nearest Neighbors</a><br>
+* <a href='http://hyperanalytic.net/k-means'>K-Means</a><br>
+* <a href='http://hyperanalytic.net/k-means++'>K-Means++</a><br>
+* <a href='http://hyperanalytic.net/linear-regression'>Linear Regression</a><br>
+* <a href='http://hyperanalytic.net/ridge-regression'>Ridge Regression</a><br>
 
 ***
 
