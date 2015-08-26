@@ -99,8 +99,8 @@ def k_means_plus_plus(x_train, K):
     for i in range(len(cluster_list)):
         for j in range(len(x_train)):
             if (x_train[j] == cluster_list[i][1]).all():
-                if dummy_array[i] != 1:
+                if dummy_array[j] != 1:
                     final_array.append([cluster_list[i][0], j, cluster_list[i][1]])
-                dummy_array[i] = 1
+                dummy_array[j] = 1
                 
-    return(means, final_array)
+    return(final_array)

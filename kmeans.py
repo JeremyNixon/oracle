@@ -28,7 +28,7 @@ def reevaluate_cluster_centers(means, clusters):
         newmeans.append(np.mean(clusters[k], axis = 0))
     return newmeans
 
-def converged(means, oldmeans):
+def terminated(means, oldmeans):
     # Check to see if the new means are the same as the old means
     return (set([tuple(a) for a in means]) == set([tuple(a) for a in oldmeans]))
 
@@ -55,8 +55,8 @@ def k_means(x_train, K):
     for i in range(len(cluster_list)):
         for j in range(len(x_train)):
             if (x_train[j] == cluster_list[i][1]).all():
-                if dummy_array[i] != 1:
+                if dummy_array[j] != 1:
                     final_array.append([cluster_list[i][0], j, cluster_list[i][1]])
-                dummy_array[i] = 1
+                dummy_array[j] = 1
                 
-    return(means, final_array)
+    return(final_array)

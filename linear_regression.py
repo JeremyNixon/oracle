@@ -1,15 +1,22 @@
 from numpy import array, dot, transpose
 from numpy.linalg import inv
 
-def linear_regression(points):
-    X = array(points)
-    X = array([[1] + list(p[:-1]) for p in X])
-    y = array([p[-1] for p in X])
+def linear_regression(x_train, y_train, x_test):
     
-    #print X
-    #print y
+    X = np.array(x_train)
+    ones = np.ones(len(X))
+    X = np.column_stack((ones,X))
+    y = np.array(y_train)
     
     Xt = transpose(X)
-    theInverse = inv(dot(Xt, X))
+    product = dot(Xt, X)
+    theInverse = inv(product)
     w = dot(dot(theInverse, Xt), y)
-    return w, lambda x: dot(w,x)
+    
+    predictions = []
+    x_test = np.array(x_test)
+    for i in x_test:
+        components = w[1:] * i
+        predictions.append(sum(components) + w[0])
+        
+    return predictions
