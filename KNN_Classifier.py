@@ -1,5 +1,7 @@
 import math
 import numpy as np
+import pandas as pd
+import sklearn.cross_validation
 
 def minkowski_distance(sample1, sample2, dimensions, q = 2):
     """
@@ -55,3 +57,11 @@ def KNN_Classifier(x_train, y_train, x_test, k, q = 2):
         result = outcome(nearest_neighbors, y_train)
         predictions.append(result)
     return predictions
+
+iris = pd.read_csv('/Users/jeremynixon/Dropbox/python/Algorithms/practice/iris.data', header=None)
+y = iris[4]
+iris = iris.drop([4], 1)
+x_train, x_test, y_train, y_test = sklearn.cross_validation.train_test_split(iris, y, test_size = .20, random_state=42)
+
+predictions = KNN_Classifier(x_train, y_train, x_test, 4, q=2)
+print predictions

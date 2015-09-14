@@ -1,4 +1,5 @@
 import numpy as np
+import random
 
 def L2_norm(vector):
     count = 0
@@ -36,7 +37,7 @@ def k_means(x_train, K):
     # Initialize Means
     oldmeans = random.sample(x_train, K)
     means = random.sample(x_train, K)
-    while not converged(means, oldmeans):
+    while not terminated(means, oldmeans):
         oldmeans = means
         
         # Assign all points to a cluster
