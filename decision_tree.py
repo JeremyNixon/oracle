@@ -13,8 +13,6 @@ class Tree(object):
         self.parents = parents
         self.label = None
 
-
-
 def data_to_distribution(y_train):
         types = set(y_train)
         distribution = []

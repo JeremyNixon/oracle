@@ -4,6 +4,8 @@
 
 ######This is a Python Machine Learning library developed by Jeremy Nixon with implementations of:
 <br><br>
+*Bagged Decision Trees
+*Decision Trees for Classificaiton
 *Regularized Linear Regression (Ridge Regression)*<br>
 *Standard Linear Regression*<br>
 *K-Nearest Neighbors*<br>
