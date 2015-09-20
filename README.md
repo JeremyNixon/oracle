@@ -9,6 +9,7 @@
 *Decision Trees for Classificaiton*<br>
 *Regularized Linear Regression (Ridge Regression)*<br>
 *Standard Linear Regression*<br>
+*Linear Regression with Gradient Descent*<br>
 *K-Nearest Neighbors*<br>
 *K-Means Clustering (Lloyd's Algorithm)*<br>
 *K-Means++* <br>
