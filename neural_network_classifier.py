@@ -1,3 +1,7 @@
+"""
+Make a call to nn_classifier with the associated parameters and data to train the network and make predictions. 
+"""
+
 import math
 import random
 import copy
@@ -127,7 +131,6 @@ def test_classifier(x_test, number_input, number_hidden, number_output, weight_i
         to_return.append(copy.copy(ao))
     return to_return
 
-# initialize network variables and arguments, arguments for training, arguments for test,
 def nn_classifier(x_train, y_train, x_test, number_hidden, number_output, n_iterations=1000, 
                   learning_rate = 0.1, momentum = 0.1, display = 100):
     
