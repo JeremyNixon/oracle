@@ -5,6 +5,7 @@
 ######This is a Python Machine Learning library developed by Jeremy Nixon with implementations of:
 <br><br>
 *Random Forest*<br>
+*Neural Network Classifier*<br>
 *Bagged Decision Trees*<br>
 *Decision Trees for Classificaiton*<br>
 *Regularized Linear Regression (Ridge Regression)*<br>
