@@ -105,7 +105,7 @@ def evaluate2H(t, x_test):
         x = layer.forward(x)
     return x
     
-def neural_network(x_train, y_train, x_test, y_test, t, num_hidden1=100, num_hidden2=100, num_hidden3=100, lr=0.1, num_iters=10000, batch_size=32):
+def neural_network(x_train, y_train, x_test, y_test, t, lr=0.1, num_iters=10000, batch_size=32):
     # Add bias
     x_train = np.column_stack((np.ones(len(x_train)), x_train))
     
