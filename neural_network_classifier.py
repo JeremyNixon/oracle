@@ -1,171 +1,165 @@
-"""
-Make a call to nn_classifier with the associated parameters and data to train the network and make predictions. 
-"""
-
-import math
-import random
-import copy
-from math import e
 import pandas as pd
 import numpy as np
 import sklearn.cross_validation
+from collections import Counter
+from sklearn import preprocessing 
 
-def init_weight(x, y):
-    if x > y:
-        temp = x
-        x = y
-        y = temp
+df = pd.read_csv('https://archive.ics.uci.edu/ml/machine-learning-databases/wine-quality/winequality-red.csv', sep=';')
+Y = df['quality'].values
+le = preprocessing.LabelEncoder().fit(Y)
+Y = le.transform(Y)
+df = preprocessing.scale(df.drop('quality',1))
+x_train, x_test, y_train, y_test = sklearn.cross_validation.train_test_split(df, Y, test_size = .80, random_state=42)
+
+class Topology:
+    def __init__(self):
+        self.layers = []
+    
+    def add(self, layer):
+        self.layers.append(layer)
+
+class Dense:
+    def __init__(self, input_shape, output_shape, n_hidden):
+        self.n_hidden = n_hidden
+        self.weights = np.random.randn(input_shape, output_shape) * .01
+        self.hidden_layer = None
+        self.delta = None
+        self.layer_type = 'Dense'
         
-    difference = y-x
-    to_add = difference * random.random()
-    return x + to_add
+    def forward(self, forward_data):
+        self.hidden_layer = np.matmul(forward_data, self.weights)
+        return self.hidden_layer
+    
+    def prev_delta(self, delta):
+        return np.matmul(delta, self.weights.T)
+    
+    def compute_gradient(self, backward_data, delta):
+        return np.matmul(backward_data.T, delta)
 
-def hyperbolic_tangent(x):
-    return math.tanh(x)
-
-def tanh_derivative(y):
-    return 1.0 - y**2
-
-def init_matrix(m, n, content = 0.0):
-    matrix = []
-    for i in range(m):
-        matrix.append([content]*n)
-    return matrix
-
-def initialize_network(number_input, number_hidden, number_output, bias_node = 1):
-    
-    number_input += bias_node
-    number_hidden += bias_node
-    
-    weight_input = init_matrix(number_input, number_hidden)
-    weight_output = init_matrix(number_hidden, number_output)
-    for i in range(number_input):
-        for j in range(number_hidden):
-            weight_input[i][j] = init_weight(-1, 1)
-    for i in range(number_hidden):
-        for j in range(number_output):
-            weight_output[i][j] = init_weight(-1, 1)
-    
-    activation_input = number_input * [1.0]
-    activation_hidden = number_hidden * [1.0]
-    activation_output = number_output * [1.0]
-    
-    momentum_input = init_matrix(number_input, number_hidden)
-    momentum_output = init_matrix(number_hidden, number_output)
-    
-    return weight_input, weight_output, momentum_input, momentum_output, activation_input, activation_hidden, activation_output
-
-def forward_pass(inputs, number_input, number_hidden, number_output, weight_input, weight_output, activation_input, activation_hidden, activation_output):
-    
-    for i in range(number_input):
-        activation_input[i] = inputs[i]
-    
-    for i in range(number_hidden):
-        aggregate = 0.0
-        for j in range(number_input):
-            aggregate += activation_input[j] * weight_input[j][i]
-        activation_hidden[i] = hyperbolic_tangent(aggregate)
-    
-    for i in range(number_output):
-        aggregate = 0.0
-        for j in range(number_hidden):
-            aggregate += activation_hidden[j] * weight_output[j][i]
-        activation_output[i] = hyperbolic_tangent(aggregate)
+class Output:
+    def __init__(self, input_shape, output_shape):
+        self.weights = np.random.randn(input_shape, output_shape) * .01
+        self.output_softmax = None
+        self.delta = None
+        self.layer_type = 'Output'
         
-    return activation_input, activation_hidden, activation_output
-
-def backpropagation(labels, learning_rate, momentum, number_input, number_hidden, number_output, activation_input, activation_hidden, activation_output, weight_input, weight_output, momentum_input, momentum_output, bias_node = 1):
+    def forward(self, forward_data):
+        output_raw = np.matmul(forward_data, self.weights)
+        self.output_softmax = np.exp(output_raw)
+        self.output_softmax = self.output_softmax / np.sum(self.output_softmax, axis=1, keepdims=True)
+        return self.output_softmax
     
-    number_input += bias_node
-    number_hidden += bias_node
+    def prev_delta(self, delta):
+        self.output_softmax[range(batch_size), y_batch] -= 1
+        self.output_softmax /= batch_size
+        return np.matmul(self.output_softmax, self.weights.T)
     
-    output_errors = [0.0] * number_output
-    for i in range(number_output):
-        output_errors[i] = labels[i] - activation_output[i]
-        output_errors[i] = tanh_derivative(activation_output[i]) * output_errors[i]
-    
-    hidden_errors = [0.0] * number_hidden
-    for i in range(number_hidden):
-        error = 0.0
-        for j in range(number_output):
-            error += output_errors[j]*weight_output[i][j]
-        hidden_errors[i] = tanh_derivative(activation_hidden[i]) * error
+    def compute_gradient(self, backward_data, delta):
+        return np.matmul(backward_data.T, delta)
         
-    for i in range(number_hidden):
-        for j in range(number_output):
-            delta = output_errors[j]*activation_hidden[i]
-            weight_output[i][j] = weight_input[i][j] + learning_rate*delta + momentum*momentum_output[i][j]
-            momentum_output[i][j] = delta
+    
+class Activation:
+    def __init__(self, kind):
+        self.layer_type = 'Activation'
+        self.kind = kind
+        self.hidden_layer = None
+        self.delta = None
+        self.output_softmax = None
+        
+    def forward(self, input_data):
+        if self.kind == 'relu':
+            self.hidden_layer = np.maximum(0, input_data)
+            return self.hidden_layer
+
+        if self.kind == 'linear':
+            self.hidden_layer = input_data
+            return self.hidden_layer
+        
+        if self.kind == 'softmax':
+            self.hidden_layer = np.exp(input_data)
+            self.output_softmax = self.hidden_layer / np.sum(self.hidden_layer, axis=1, keepdims=True)
+            return self.output_softmax
+        
+    def prev_delta(self, delta):
+        if self.kind == 'relu':
+            delta[self.hidden_layer <= 0] = 0
+            return delta
+        
+        if self.kind == 'linear':
+            return delta
+        
+        if self.kind == 'softmax':
+            self.output_softmax /= len(self.output_softmax)
+            self.output_softmax[range(batch_size), y_batch] -= 1
+            self.delta = self.output_softmax
+            return self.delta
+        
+    def compute_gradient(self, fill1, fill2):
+        return
+    
+def evaluate2H(t, x_test):
+    x_test = np.column_stack((np.ones(len(x_test)), x_test))
+    x = x_test
+    # Forward
+    for layer in t.layers:
+        x = layer.forward(x)
+    return x
+    
+def neural_network(x_train, y_train, x_test, y_test, t, num_hidden1=100, num_hidden2=100, num_hidden3=100, lr=0.1, num_iters=10000, batch_size=32):
+    # Add bias
+    x_train = np.column_stack((np.ones(len(x_train)), x_train))
+    
+    # Get Important Shapes
+    n_row, n_col = np.shape(x_train)
+    n_classes = len(np.unique(y_train))
+    
+    # Iterate Through Backpropagation
+    for iteration in xrange(num_iters):
+        
+        stochastic_sample = np.random.randint(0, n_row-1, batch_size)
             
-    for i in range(number_input):
-        for j in range(number_hidden):
-            delta = hidden_errors[j]*activation_input[i]
-            weight_input[i][j] = weight_input[i][j] + learning_rate*delta + momentum*momentum_input[i][j]
-            momentum_input[i][j] = delta
-    
-    sse = 0.0
-    for i in range(len(labels)):
-        sse += .5 * ((labels[i]-activation_output[i])**2)
+        x_batch = x_train[stochastic_sample]
+        y_batch = y_train[stochastic_sample]
+        
+        x = x_batch
+        # Forward
+        for layer in t.layers:
+            x = layer.forward(x)
+        
+        output_softmax = x
+        
+        # Backward
+        
+        output_softmax[range(batch_size), y_batch] -= 1
+        t.layers[-1].delta = output_softmax/batch_size
+        for i in xrange(len(t.layers)-2, 0, -1):
+            if t.layers[i].layer_type == 'Dense':
+                t.layers[i].delta = t.layers[i].prev_delta(t.layers[i+1].delta)
+            if t.layers[i].layer_type == 'Activation':
+                t.layers[i].delta = t.layers[i].prev_delta(t.layers[i+1].delta)
+        
+        for i in xrange(len(t.layers)-2, -1, -1):
+            if t.layers[i].layer_type == 'Dense':
+                if i == 0:
+                    t.layers[i].weights -= lr * t.layers[i].compute_gradient(x_batch, t.layers[i+1].delta)
+                else:
+                    t.layers[i].weights -= lr * t.layers[i].compute_gradient(t.layers[i-1].hidden_layer, t.layers[i+1].delta)
 
-    return sse, weight_input, weight_output, momentum_input, momentum_output
+        weights = []
+        for layer in t.layers:
+            if layer.layer_type == 'Dense':
+                weights.append(layer.weights)
+    return t
 
-def train_classifier(data, number_input, number_hidden, number_output, weight_input, weight_output, momentum_input, momentum_output, activation_input, activation_hidden, activation_output, iterations = 1000, learning_rate = .5, momentum=.1, display = 100):
-    for i in xrange(iterations):
-        sse = 0.0
-        for datapoint in data:
-            activation_input, activation_hidden, activation_output = forward_pass(datapoint[0], number_input, number_hidden, number_output, weight_input, weight_output, activation_input, activation_hidden, activation_output)
-            to_add, weight_input, weight_output, momentum_input, momentum_output = backpropagation(datapoint[1], learning_rate, momentum, number_input, number_hidden, number_output, activation_input, activation_hidden, activation_output, weight_input, weight_output, momentum_input, momentum_output)
-            sse += to_add
-            
-        if i % display == 0:
-            print i,
-            print 'error %f' %(sse)
-            
-    return weight_input, weight_output, activation_input, activation_hidden, activation_output
+t = Topology()
+t.add(Dense(input_shape = 12, output_shape = 100, n_hidden = 100))
+t.add(Activation('relu'))
+t.add(Dense(100, 100, 100))
+t.add(Activation('relu'))
+t.add(Dense(100, 6, 0))
+t.add(Activation('softmax'))
 
+topology = neural_network(x_train, y_train, x_test, y_test, t, num_iters = 10000)
 
-def test_classifier(x_test, number_input, number_hidden, number_output, weight_input, weight_output, activation_input, activation_hidden, activation_output):
-    to_return = []
-    for datapoint in x_test:
-        ai, ah, ao = forward_pass(datapoint, number_input, number_hidden, number_output, weight_input, weight_output, activation_input, activation_hidden, activation_output)
-        to_return.append(copy.copy(ao))
-    return to_return
-
-def nn_classifier(x_train, y_train, x_test, number_hidden, number_output, n_iterations=1000, 
-                  learning_rate = 0.1, momentum = 0.1, display = 100):
-    
-    
-    
-    x_train = np.array(x_train)
-    y_train = np.array(y_train)
-    x_test = np.array(x_test)
-
-    x_train_list = []
-    y_train_list = []
-    x_test_list = []
-
-    for i in x_train:
-        x_train_list.append(list(i))
-    for i in y_train:
-        y_train_list.append([i])
-    for i in x_test:
-        x_test_list.append(list(i))
-
-    train = [list(i) for i in zip(x_train_list, y_train_list)]
-    test = [list(i) for i in x_test_list]
-    
-    number_input = len(train[0][0])
-    
-    weight_input, weight_output, momentum_input, momentum_output, activation_input, activation_hidden, activation_output = initialize_network(number_input, number_hidden, number_output)
-    
-    weight_input, weight_output, activation_input, activation_hidden, activation_output = train_classifier(train, number_input, number_hidden, number_output, weight_input, weight_output, momentum_input, momentum_output, activation_input, activation_hidden, activation_output, n_iterations, learning_rate, momentum, display)
-    predictions = test_classifier(test, number_input, number_hidden, number_output, weight_input, weight_output, activation_input, activation_hidden, activation_output)
-
-    classes = []
-    for i in predictions:
-        if i[0] > 0.5:
-            classes.append(1)
-        else:
-            classes.append(0)
-
-    return classes
+out = evaluate2H(topology, x_test)
+print Counter(y_test-np.argmax(out, axis=1))[0]/float(len(y_test))
