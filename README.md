@@ -9,7 +9,7 @@
 *Convolutional Neural Network* <br>
 *Bagged Decision Trees*<br>
 *Decision Trees for Classificaiton*<br>
-*Linear Regression (Lasso + Ridge Penalties)
+*Linear Regression (Lasso + Ridge Penalties)*<br>
 *K-Nearest Neighbors*<br>
 *K-Means Clustering (Lloyd's Algorithm)*<br>
 *K-Means++* <br>
