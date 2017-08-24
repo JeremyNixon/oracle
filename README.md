@@ -3,7 +3,7 @@
 ***
 
 #### This is a Python Machine Learning library developed by Jeremy Nixon with implementations of:
-<br><br>
+<br>
 *Random Forests*<br>
 *Neural Network Classifier*<br>
 *Convolutional Neural Network* <br>
