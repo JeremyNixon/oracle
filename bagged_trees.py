@@ -144,7 +144,3 @@ def bagged_trees(x_train, y_train, x_test, n_estimators):
 
 
 
-# In[ ]:
-
-
-
