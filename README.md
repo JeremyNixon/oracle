@@ -1,8 +1,8 @@
-###Welcome to Oracle!
+### Welcome to Oracle!
 
 ***
 
-######This is a Python Machine Learning library developed by Jeremy Nixon with implementations of:
+###### This is a Python Machine Learning library developed by Jeremy Nixon with implementations of:
 <br><br>
 *Random Forest*<br>
 *Neural Network Classifier*<br>
