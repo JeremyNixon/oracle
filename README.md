@@ -3,7 +3,7 @@
 ***
 
 #### This is a Python Machine Learning library developed by Jeremy Nixon with implementations of:
-<br><br>
+<br>
 *Random Forests*<br>
 *Neural Network Classifier*<br>
 *Bagged Decision Trees*<br>
@@ -14,7 +14,6 @@
 *K-Nearest Neighbors*<br>
 *K-Means Clustering (Lloyd's Algorithm)*<br>
 *K-Means++* <br>
-*Naive Bayes* <br>
 *Logistic Regression*<br>
 
 ***
