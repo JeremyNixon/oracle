@@ -13,6 +13,7 @@
 *K-Nearest Neighbors*<br>
 *K-Means Clustering (Lloyd's Algorithm)*<br>
 *K-Means++* <br>
+*Perceptron* <br>
 *Logistic Regression*<br>
 
 ***

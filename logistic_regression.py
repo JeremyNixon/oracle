@@ -1,6 +1,6 @@
 import numpy as np
 
-def linear_regression(x_train, y_train, lr = .01, num_iter=1000, optimizer="sgd", batch_size=32):
+def logistic_regression(x_train, y_train, lr = .01, num_iter=1000, optimizer="sgd", batch_size=32):
     x_train = np.column_stack((np.ones(len(x_train)), x_train))
     nrow, ncol = x_train.shape
     n_classes = len(np.unique(y_train))
