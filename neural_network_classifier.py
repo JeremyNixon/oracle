@@ -1,6 +1,6 @@
 import pandas as pd
 import numpy as np
-import sklearn.cross_validation
+import sklearn.model_selection
 from collections import Counter
 from sklearn import preprocessing 
 
@@ -9,7 +9,7 @@ Y = df['quality'].values
 le = preprocessing.LabelEncoder().fit(Y)
 Y = le.transform(Y)
 df = preprocessing.scale(df.drop('quality',1))
-x_train, x_test, y_train, y_test = sklearn.cross_validation.train_test_split(df, Y, test_size = .80, random_state=42)
+x_train, x_test, y_train, y_test = sklearn.model_selection.train_test_split(df, Y, test_size = .80, random_state=42)
 
 class Topology:
     def __init__(self):

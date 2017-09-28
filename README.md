@@ -14,6 +14,7 @@
 *K-Means Clustering (Lloyd's Algorithm)*<br>
 *K-Means++* <br>
 *Perceptron* <br>
+*Naive Bayes* <br>
 *Logistic Regression*<br>
 <!-- 
 ***
