@@ -1,46 +1,39 @@
-import math
 import numpy as np
 import pandas as pd
-import sklearn.cross_validation
+import sklearn.model_selection
+from collections import Counter
 
-def knn(x_train, y_train, x_test, k):
-    predictions = []
-    # Compute solution for each test datapoint
-    for datapoint in x_test:
-        distances = []
+class KNN():
+    def __init__(self, k=4):
+        self.k = k
+        self.x_train = None
+        self.y_train = None
+    
+    def fit(self, x_train, y_train):
+        self.x_train = np.array(x_train)
+        self.y_train = np.array(y_train)
         
-        # Get distance to every training set datapoint
-        for index, vector in enumerate(x_train):
-            distances.append([np.sum(np.sqrt((datapoint-vector)**2)), y_train[index]])
-                              
-        # Sort by distance
-        distances.sort()
+    def predict(self, x_test):
+        predictions = []
+        for i, test in enumerate(np.array(x_test)):
+            # For each test datapoint, compute distance to each training datapoint
+            distances = [(np.sum(np.abs(test-j)), index) for index, j in enumerate(self.x_train)]
+            distances.sort()
+            
+            # Grab the indices of the closest k training datapoints
+            indices = np.array(distances)[:, 1][:self.k]
+            
+            # Predict the most common class (plurality)
+            predictions.append(Counter(self.y_train[map(int, list(indices))]).most_common(1)[0][0])
+        return predictions     
 
-        # Plurality prediction
-        counts = {}
-        for i in xrange(k):
-            try:
-                counts[distances[i][1]] += 1
-            except:
-                counts[distances[i][1]] = 1
-        
-        # Recover Maximum
-        base = 0
-        for i in xrange(len(np.unique(y_train))):
-            try:
-                value = counts[i]
-                if value > base:
-                    prediction = i
-            except:
-                pass
-        # Add Maximum to Predictions
-        predictions.append(prediction)
-    return predictions        
-
-iris = pd.read_csv('/Users/jeremynixon/Dropbox/python/Algorithms/practice/iris.data', header=None)
+iris = pd.read_csv('/Users/jeremynixon/Dropbox/python_new/oracle/data/iris.csv', header=None)
 y = iris[4]
 iris = iris.drop([4], 1)
-x_train, x_test, y_train, y_test = sklearn.cross_validation.train_test_split(iris, y, test_size = .20, random_state=42)
+x_train, x_test, y_train, y_test = sklearn.model_selection.train_test_split(iris, y, test_size = .20, random_state=42)
 
-predictions = knn(x_train, y_train, x_test, 4)
-print predictions
+knn = KNN(k=5)
+knn.fit(x_train, y_train)
+preds = knn.predict(x_test)
+accuracy = Counter(preds-y_test)[0]/float(len(y_test))
+print accuracy, preds
