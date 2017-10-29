@@ -4,12 +4,6 @@ import sklearn.model_selection
 from collections import Counter
 import math
 
-class Topology:
-    def __init__(self):
-        self.layers = []
-    
-    def add(self, layer):
-        self.layers.append(layer)
 
 class Dense:
     def __init__(self, input_shape, output_shape, n_hidden):
@@ -194,119 +188,129 @@ class Activation:
     def compute_gradient(self, fill1, fill2):
         return
     
-def evaluate(t, x_test, y_test):
-    x = x_test
-    # Forward
-    for layer in t.layers:
-        x = layer.forward(x)    
-    output_softmax = x
-    loss = Counter(y_test-np.argmax(output_softmax, axis=1))[0]/float(len(y_test))
-    return loss
-
-def neural_network(x_train, y_train, x_test, y_test, t, lr=0.1, s=0.9, r=0.999, num_iters=10000, batch_size=32, optimizer='adam'):
+class Topology:
+    def __init__(self):
+        self.layers = []
     
-    # Get Important Shapes
-    n_row, n_col = np.shape(x_train)
-    n_classes = len(np.unique(y_train))
-    
-    # Init Space for Losses
-    losses = []
-    
-    # Init time step
-    step = 0
-    
-    # Init numerical stability
-    numerical_stability = .0000001
-    
-    # Iterate Through Backpropagation
-    for iteration in xrange(num_iters):
-        step += 1
+    def add(self, layer):
+        self.layers.append(layer)
         
-        stochastic_sample = np.random.randint(0, n_row-1, batch_size)
-            
-        x_batch = x_train[stochastic_sample]
-        y_batch = y_train[stochastic_sample]
-        
-        x = x_batch
+    def predict(self, x_test):
+        x = x_test
         # Forward
-        for layer in t.layers:
-            x = layer.forward(x)
-        
+        for layer in self.layers:
+            x = layer.forward(x)    
         output_softmax = x
+        return np.argmax(output_softmax, axis=1)
         
-        # Backward
-        output_softmax[range(batch_size), y_batch] -= 1
-        t.layers[-1].delta = output_softmax/batch_size
-        
-        # Compute Errors
-        for i in xrange(len(t.layers)-2, 0, -1):
-            t.layers[i].delta = t.layers[i].prev_delta(t.layers[i+1].delta)
-        
-        # Compute and Update Gradients
-        for i in xrange(len(t.layers)-2, -1, -1):
-            if t.layers[i].layer_type == 'Dense' or t.layers[i].layer_type == 'Convolution2D':
-                if t.layers[i].layer_type == 'Dense':
-                    if i == 0:
-                        gradient = t.layers[i].compute_gradient(x_batch, t.layers[i+1].delta)
-                    else:
-                        gradient = t.layers[i].compute_gradient(t.layers[i-1].hidden_layer, t.layers[i+1].delta)
+    def evaluate(self, x_test, y_test):
+        x = x_test
+        # Forward
+        for layer in self.layers:
+            x = layer.forward(x)    
+        output_softmax = x
+        accuracy = Counter(y_test-np.argmax(output_softmax, axis=1))[0]/float(len(y_test))
+        return accuracy
 
-                if t.layers[i].layer_type == 'Convolution2D':
-                    if i == 0:
-                        gradient = t.layers[i].compute_gradient(x_batch, t.layers[i+1].delta)
-                    else:
-                        gradient = t.layers[i].compute_gradient(t.layers[i-1].hidden_layer, t.layers[i+1].delta)
+    def fit(self, x_train, y_train, x_test, y_test, lr=0.1, s=0.9, r=0.999, num_iters=10000, batch_size=32, optimizer='adam'):
+        t = self
+        # Get Important Shapes
+        n_row, n_col = np.shape(x_train)
+        n_classes = len(np.unique(y_train))
+
+        # Init Space for Losses
+        losses = []
+
+        # Init time step
+        step = 0
+
+        # Init numerical stability
+        numerical_stability = .0000001
+
+        # Iterate Through Backpropagation
+        for iteration in xrange(num_iters):
+            step += 1
+
+            stochastic_sample = np.random.randint(0, n_row-1, batch_size)
+
+            x_batch = x_train[stochastic_sample]
+            y_batch = y_train[stochastic_sample]
+
+            x = x_batch
+            # Forward
+            for layer in t.layers:
+                x = layer.forward(x)
+
+            output_softmax = x
+
+            # Backward
+            output_softmax[range(batch_size), y_batch] -= 1
+            t.layers[-1].delta = output_softmax/batch_size
+
+            # Compute Errors
+            for i in xrange(len(t.layers)-2, 0, -1):
+                t.layers[i].delta = t.layers[i].prev_delta(t.layers[i+1].delta)
+
+            # Compute and Update Gradients
+            for i in xrange(len(t.layers)-2, -1, -1):
+                if t.layers[i].layer_type == 'Dense' or t.layers[i].layer_type == 'Convolution2D':
+                    if t.layers[i].layer_type == 'Dense':
+                        if i == 0:
+                            gradient = t.layers[i].compute_gradient(x_batch, t.layers[i+1].delta)
+                        else:
+                            gradient = t.layers[i].compute_gradient(t.layers[i-1].hidden_layer, t.layers[i+1].delta)
+
+                    if t.layers[i].layer_type == 'Convolution2D':
+                        if i == 0:
+                            gradient = t.layers[i].compute_gradient(x_batch, t.layers[i+1].delta)
+                        else:
+                            gradient = t.layers[i].compute_gradient(t.layers[i-1].hidden_layer, t.layers[i+1].delta)
 
 
-                if optimizer == 'adam':
-                    
-                    gradient = gradient + numerical_stability
+                    if optimizer == 'adam':
 
-                    # Update biased moment estimates
-                    t.layers[i].moment1 = s * t.layers[i].moment1 + (1-s) * gradient
-                    t.layers[i].moment2 = r * t.layers[i].moment2 + (1-r) * (gradient * gradient)
+                        gradient = gradient + numerical_stability
 
-                    # Correct bias in moment estimates
-                    m1_unbiased = t.layers[i].moment1/(1-s**step)
-                    m2_unbiased = t.layers[i].moment2/(1-r**step)
+                        # Update biased moment estimates
+                        t.layers[i].moment1 = s * t.layers[i].moment1 + (1-s) * gradient
+                        t.layers[i].moment2 = r * t.layers[i].moment2 + (1-r) * (gradient * gradient)
 
-                    # Update Layer Weights
-                    t.layers[i].weights -= lr * m1_unbiased/(np.sqrt(m2_unbiased) + numerical_stability)
+                        # Correct bias in moment estimates
+                        m1_unbiased = t.layers[i].moment1/(1-s**step)
+                        m2_unbiased = t.layers[i].moment2/(1-r**step)
 
-                if optimizer == 'sgd':
+                        # Update Layer Weights
+                        t.layers[i].weights -= lr * m1_unbiased/(np.sqrt(m2_unbiased) + numerical_stability)
 
-                    # Update Layer Weights
-                    t.layers[i].weights -= lr * gradient
+                    if optimizer == 'sgd':
 
-                if optimizer == 'momentum':
+                        # Update Layer Weights
+                        t.layers[i].weights -= lr * gradient
 
-                    # Update Momentum
-                    t.layers[i].moment1 = s * t.layers[i].moment1 + (1-s) * gradient
+                    if optimizer == 'momentum':
 
-                    # Update Layer Weights
-                    t.layers[i].weights -= (lr * gradient) + t.layers[i].moment1      
-        
-        if iteration % 10 == 0:
-            training_loss = evaluate(t, x_train[:1000], y_train[:1000])
-            validation_loss = evaluate(t, x_test[:1000], y_test[:1000])
-            losses.append([training_loss, validation_loss])
-        if iteration % 100 == 0:
-            print "Iteration ", iteration, ": Train Loss = ", training_loss, " Val Loss = ", validation_loss
-        
-    return t, losses
+                        # Update Momentum
+                        t.layers[i].moment1 = s * t.layers[i].moment1 + (1-s) * gradient
+
+                        # Update Layer Weights
+                        t.layers[i].weights -= (lr * gradient) + t.layers[i].moment1      
+
+            if iteration % 10 == 0:
+                training_loss = self.evaluate(x_train[:1000], y_train[:1000])
+                validation_loss = self.evaluate(x_test[:1000], y_test[:1000])
+                losses.append([training_loss, validation_loss])
+            if iteration % 10 == 0:
+                print "Iteration ", iteration, ": Train Loss = ", training_loss, " Val Loss = ", validation_loss
 
 from keras.datasets import mnist
 (train_img, y_train), (val_img, y_test) = mnist.load_data()
 x_train = np.array([train_img[i].flatten() for i in xrange(len(train_img))])/float(255)
 x_test = np.array([val_img[i].flatten() for i in xrange(len(val_img))])/float(255)
 
-
 t = Topology()
-t.add(Dense(x_train.shape[1], 1000, 1000))
+t.add(Convolution2D(8, 1, (3,3), (28,28)))
 t.add(Activation('relu'))
-t.add(Dense(1000, len(np.unique(y_train)), 0))
+t.add(Dense(6272, len(np.unique(y_train)), 0))
 t.add(Activation('softmax'))
-topology, l = neural_network(x_train, y_train, x_test, y_test, t, lr=.01, num_iters = 1000, optimizer='adam')
-
-
-
+t.fit(x_train, y_train, x_test, y_test, lr=.01, num_iters = 100, optimizer='adam')
+preds = t.predict(x_test)
