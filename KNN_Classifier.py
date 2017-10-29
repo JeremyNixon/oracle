@@ -1,9 +1,8 @@
 import numpy as np
 import pandas as pd
-import sklearn.model_selection
 from collections import Counter
 
-class KNN():
+class KNNClassifier():
     def __init__(self, k=4):
         self.k = k
         self.x_train = None
@@ -28,11 +27,13 @@ class KNN():
         return predictions     
 
 iris = pd.read_csv('/Users/jeremynixon/Dropbox/python_new/oracle/data/iris.csv')
-y = iris['label']
-x = iris.drop(['label'], 1)
-x_train, x_test, y_train, y_test = sklearn.model_selection.train_test_split(x, y, test_size = .20, random_state=42)
+labels = iris['label']
+features = iris.drop(['label'], 1)
 
-knn = KNN(k=5)
+import sklearn.model_selection
+x_train, x_test, y_train, y_test = sklearn.model_selection.train_test_split(features, labels, test_size = .20, random_state=42)
+
+knn = KNNClassifier(k=5)
 knn.fit(x_train, y_train)
 preds = knn.predict(x_test)
 accuracy = Counter(preds-y_test)[0]/float(len(y_test))
