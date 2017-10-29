@@ -302,10 +302,17 @@ class Topology:
             if iteration % 10 == 0:
                 print "Iteration ", iteration, ": Train Loss = ", training_loss, " Val Loss = ", validation_loss
 
+import sys
+f = open('/dev/null', 'w')
+sys.stdout = f
+sys.stderr = f
+
 from keras.datasets import mnist
 (train_img, y_train), (val_img, y_test) = mnist.load_data()
 x_train = np.array([train_img[i].flatten() for i in xrange(len(train_img))])/float(255)
 x_test = np.array([val_img[i].flatten() for i in xrange(len(val_img))])/float(255)
+
+sys.stdout = sys.__stdout__
 
 t = Topology()
 t.add(Convolution2D(8, 1, (3,3), (28,28)))
