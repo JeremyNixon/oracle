@@ -27,10 +27,10 @@ class KNN():
             predictions.append(Counter(self.y_train[map(int, list(indices))]).most_common(1)[0][0])
         return predictions     
 
-iris = pd.read_csv('/Users/jeremynixon/Dropbox/python_new/oracle/data/iris.csv', header=None)
-y = iris[4]
-iris = iris.drop([4], 1)
-x_train, x_test, y_train, y_test = sklearn.model_selection.train_test_split(iris, y, test_size = .20, random_state=42)
+iris = pd.read_csv('/Users/jeremynixon/Dropbox/python_new/oracle/data/iris.csv')
+y = iris['label']
+x = iris.drop(['label'], 1)
+x_train, x_test, y_train, y_test = sklearn.model_selection.train_test_split(x, y, test_size = .20, random_state=42)
 
 knn = KNN(k=5)
 knn.fit(x_train, y_train)
