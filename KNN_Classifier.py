@@ -26,7 +26,7 @@ class KNNClassifier():
             predictions.append(Counter(self.y_train[map(int, list(indices))]).most_common(1)[0][0])
         return predictions     
 
-iris = pd.read_csv('/Users/jeremynixon/Dropbox/python_new/oracle/data/iris.csv')
+iris = pd.read_csv('~/Dropbox/python_new/Oracle/data/iris.csv')
 labels = iris['label']
 features = iris.drop(['label'], 1)
 
